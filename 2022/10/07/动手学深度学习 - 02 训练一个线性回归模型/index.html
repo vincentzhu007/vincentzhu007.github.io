@@ -23,15 +23,15 @@
   <title>动手学深度学习 - 02 训练一个线性回归模型 - Coder Zhu</title>
 
   
-    <meta name="description" content="定义一个线性模型：$$y &#x3D; Wx + B + \epsilon$$其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 from mxnet import autograd, nd  生成数据nu">
+    <meta name="description" content="定义一个线性模型：  y &#x3D; Wx + B + \epsilon其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 from mxnet import autograd, nd 生成数据num_batche">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动手学深度学习 - 02 训练一个线性回归模型">
 <meta property="og:url" content="https://vincentzhu007.github.io/2022/10/07/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2002%20%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Coder Zhu">
-<meta property="og:description" content="定义一个线性模型：$$y &#x3D; Wx + B + \epsilon$$其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 from mxnet import autograd, nd  生成数据nu">
+<meta property="og:description" content="定义一个线性模型：  y &#x3D; Wx + B + \epsilon其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 from mxnet import autograd, nd 生成数据num_batche">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-10-07T14:11:35.000Z">
-<meta property="article:modified_time" content="2023-01-27T08:44:59.442Z">
+<meta property="article:modified_time" content="2023-01-27T08:53:07.994Z">
 <meta property="article:author" content="Vincent Zhu">
 <meta property="article:tag" content="Code, Software">
 <meta name="twitter:card" content="summary">
@@ -107,12 +107,12 @@
 
 <article class='md-text content post'>
 <h1 class="article-title"><span>动手学深度学习 - 02 训练一个线性回归模型</span></h1>
-<p>定义一个线性模型：<br>$$<br>y &#x3D; Wx + B + \epsilon<br>$$<br>其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。</p>
+<p>定义一个线性模型：</p>
+<script type="math/tex; mode=display">
+y = Wx + B + \epsilon</script><p>其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。</p>
 <p>现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> mxnet <span class="keyword">import</span> autograd, nd</span><br></pre></td></tr></table></figure>
-
 <h2 id="生成数据"><a href="#生成数据" class="headerlink" title="生成数据"></a>生成数据</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">num_batches = <span class="number">1000</span></span><br><span class="line">num_inputs = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">true_w = nd.array([[<span class="number">4.2</span>, <span class="number">2.0</span>, -<span class="number">3.2</span>]]).T</span><br><span class="line">true_b = nd.array([[<span class="number">2.0</span>]])</span><br><span class="line">x = nd.random.normal(<span class="number">0</span>, <span class="number">1</span>, shape=(num_batches, num_inputs))</span><br><span class="line">epsilon = nd.random.normal(<span class="number">0</span>, <span class="number">0.01</span>, shape=(num_batches, <span class="number">1</span>)) <span class="comment"># 噪声服从均值为0,方差为0.1的正态分布</span></span><br><span class="line">y0 = nd.dot(x, true_w) + true_b + epsilon</span><br><span class="line">y = y0 + epsilon</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(true_w.shape)</span><br><span class="line"><span class="built_in">print</span>(true_b.shape)</span><br><span class="line"><span class="built_in">print</span>(x.shape)</span><br><span class="line"><span class="built_in">print</span>(y.shape)</span><br><span class="line"><span class="built_in">print</span>(epsilon.shape)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(x[<span class="number">0</span>:<span class="number">10</span>])</span><br><span class="line"><span class="built_in">print</span>(y[<span class="number">0</span>:<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
-
 <pre><code>(3, 1)
 (1, 1)
 (1000, 3)
@@ -142,14 +142,9 @@
  [ 1.9715714]
  [ 1.8121778]]
 &lt;NDArray 10x1 @cpu(0)&gt;
-</code></pre>
-<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><p>编写一个自定义的迭代器，来一批一批的获取数据。</p>
+</code></pre><h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><p>编写一个自定义的迭代器，来一批一批的获取数据。</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line">iter_batch_size = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">data_iter</span>():</span><br><span class="line">    <span class="comment"># 产生一个随机索引序列</span></span><br><span class="line">    idx = <span class="built_in">list</span>(<span class="built_in">range</span>(num_batches)) <span class="comment"># 生成索引序列：0,1,2,...,999</span></span><br><span class="line">    random.shuffle(idx) <span class="comment"># 随机打乱索引</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 每次随机取10个数据</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, num_batches, iter_batch_size): <span class="comment"># 在不打乱的情况下，会生成：0，10, 20, 30 ..., 990</span></span><br><span class="line">        j = nd.array(idx[i : <span class="built_in">min</span>(i + iter_batch_size, num_batches)]) <span class="comment"># 这里设置取值范围：[0:10], [10:20],...</span></span><br><span class="line">        <span class="keyword">yield</span> nd.take(x, j), nd.take(y, j) <span class="comment"># 迭代器获取数据</span></span><br></pre></td></tr></table></figure>
-
-
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 测试迭代器，拿2次</span></span><br><span class="line">n = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> data, label <span class="keyword">in</span> data_iter():</span><br><span class="line">    <span class="built_in">print</span>(data, label)</span><br><span class="line">    n += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> (n &gt;= <span class="number">2</span>):</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
-
-
 <pre><code>[[ 4.2505121e+00 -2.1137807e-03 -7.9776019e-01]
  [ 4.9009416e-01 -1.1063820e+00  3.5573665e-02]
  [-1.2949859e-01 -3.0296946e-02 -1.7266597e-01]
@@ -195,10 +190,7 @@
  [ 6.4096384 ]
  [12.895386  ]]
 &lt;NDArray 10x1 @cpu(0)&gt;
-</code></pre>
-<h2 id="初始化模型参数"><a href="#初始化模型参数" class="headerlink" title="初始化模型参数"></a>初始化模型参数</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">w = nd.random.normal(shape=(num_inputs, <span class="number">1</span>))</span><br><span class="line">b = nd.zeros((<span class="number">1</span>,))</span><br><span class="line">params = [w, b]</span><br><span class="line"><span class="built_in">print</span>(w)</span><br><span class="line"><span class="built_in">print</span>(b)</span><br><span class="line"><span class="built_in">print</span>(params)</span><br></pre></td></tr></table></figure>
-
-
+</code></pre><h2 id="初始化模型参数"><a href="#初始化模型参数" class="headerlink" title="初始化模型参数"></a>初始化模型参数</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">w = nd.random.normal(shape=(num_inputs, <span class="number">1</span>))</span><br><span class="line">b = nd.zeros((<span class="number">1</span>,))</span><br><span class="line">params = [w, b]</span><br><span class="line"><span class="built_in">print</span>(w)</span><br><span class="line"><span class="built_in">print</span>(b)</span><br><span class="line"><span class="built_in">print</span>(params)</span><br></pre></td></tr></table></figure>
 <pre><code>[[-1.3058136]
  [ 0.9344402]
  [ 0.5380863]]
@@ -213,62 +205,40 @@
 &lt;NDArray 3x1 @cpu(0)&gt;, 
 [0.]
 &lt;NDArray 1 @cpu(0)&gt;]
-</code></pre>
-<p>为参数创建梯度信息，为后面的参数求导做准备。</p>
+</code></pre><p>为参数创建梯度信息，为后面的参数求导做准备。</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> params:</span><br><span class="line">    param.attach_grad()</span><br></pre></td></tr></table></figure>
-
 <h2 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">net</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> nd.dot(x, w) + b <span class="comment"># 线性模型的预测值y_hat</span></span><br></pre></td></tr></table></figure>
-
-
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 测试一下模型</span></span><br><span class="line">net(data)</span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>​<br>    [[-0.44976735]<br>     [ 1.0977497 ]<br>     [ 0.35266796]<br>     [ 2.1956747 ]<br>     [-2.0277233 ]<br>     [ 0.02287859]<br>     [-1.6621547 ]<br>     [-1.0749872 ]<br>     [-0.9648698 ]<br>     [-3.8309872 ]]<br>    &lt;NDArray 10x1 @cpu(0)&gt;</p>
+<p>​<br>    [[-0.44976735]<br>     [ 1.0977497 ]<br>     [ 0.35266796]<br>     [ 2.1956747 ]<br>     [-2.0277233 ]<br>     [ 0.02287859]<br>     [-1.6621547 ]<br>     [-1.0749872 ]<br>     [-0.9648698 ]<br>     [-3.8309872 ]]<br>    <NDArray 10x1 @cpu(0)></p>
 <h2 id="定义损失函数"><a href="#定义损失函数" class="headerlink" title="定义损失函数"></a>定义损失函数</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">square_loss</span>(<span class="params">yhat, y</span>):</span><br><span class="line">    <span class="comment"># 将y reshape，避免自动广播</span></span><br><span class="line">    <span class="keyword">return</span> (yhat - y.reshape(yhat.shape)) ** <span class="number">2</span></span><br></pre></td></tr></table></figure>
-
 <h2 id="定义优化求解策略：随机梯度下降SGD"><a href="#定义优化求解策略：随机梯度下降SGD" class="headerlink" title="定义优化求解策略：随机梯度下降SGD"></a>定义优化求解策略：随机梯度下降SGD</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">sgd</span>(<span class="params">params, learning_rate</span>):</span><br><span class="line">    <span class="keyword">for</span> param <span class="keyword">in</span> params:</span><br><span class="line">        param[:] = param - learning_rate * param.grad</span><br></pre></td></tr></table></figure>
-
 <h2 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">epochs = <span class="number">5</span></span><br><span class="line">learning_rate = <span class="number">.001</span></span><br><span class="line"><span class="keyword">for</span> e <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">    total_loss = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> data, label <span class="keyword">in</span> data_iter():</span><br><span class="line">        <span class="comment"># 一次迭代学习过程</span></span><br><span class="line">        <span class="keyword">with</span> autograd.record():</span><br><span class="line">            output = net(data)</span><br><span class="line">            loss = square_loss(output, label)</span><br><span class="line">        loss.backward()</span><br><span class="line">        sgd(params, learning_rate)</span><br><span class="line">        </span><br><span class="line">        total_loss += nd.<span class="built_in">sum</span>(loss).asscalar()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Epoch %d, average loss: %f&quot;</span> % (e, total_loss/num_batches))</span><br></pre></td></tr></table></figure>
-
 <pre><code>Epoch 0, average loss: 12.393637
 Epoch 1, average loss: 0.164320
 Epoch 2, average loss: 0.002606
 Epoch 3, average loss: 0.000418
 Epoch 4, average loss: 0.000386
-</code></pre>
-<p>训练完，比较学到的参数和真实参数</p>
+</code></pre><p>训练完，比较学到的参数和真实参数</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">true_b, b</span><br></pre></td></tr></table></figure>
-
-
-
-
 <pre><code>(
  [[2.]]
  &lt;NDArray 1x1 @cpu(0)&gt;,
- 
+
  [2.0011895]
  &lt;NDArray 1 @cpu(0)&gt;)
-</code></pre>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">true_w, w</span><br></pre></td></tr></table></figure>
-
-
-
-
+</code></pre><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">true_w, w</span><br></pre></td></tr></table></figure>
 <pre><code>(
  [[ 4.2]
   [ 2. ]
   [-3.2]]
  &lt;NDArray 3x1 @cpu(0)&gt;,
- 
+
  [[ 4.1996527]
   [ 2.000402 ]
   [-3.199496 ]]
  &lt;NDArray 3x1 @cpu(0)&gt;)
-</code></pre>
-<p>可以看到训练得到的参数，与真实参数非常接近。并且，随着训练次数的增加，损失函数值逐步收敛。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>B站李沐课程<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1tx41147Bp?t=3167.7">[MXNet&#x2F;Gluon] 动手学深度学习第一课：从上手到多类分类</a></p>
+</code></pre><p>可以看到训练得到的参数，与真实参数非常接近。并且，随着训练次数的增加，损失函数值逐步收敛。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>B站李沐课程<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1tx41147Bp?t=3167.7">[MXNet/Gluon] 动手学深度学习第一课：从上手到多类分类</a></p>
 
 
 <div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
@@ -456,5 +426,20 @@ Epoch 4, average loss: 0.000386
 
 
   </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

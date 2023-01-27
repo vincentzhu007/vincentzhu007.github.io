@@ -31,7 +31,7 @@
 <meta property="og:description" content="背景：在个人开发的计算机上，一般只使用一个默认的ras秘钥对，但Gitee（GitHub也是如此，此处以Gitee为例）不允许多个gitee账号设置同一ssh公钥。 目标：在同一台机器上开发多个gitee账号下的项目。 解决方法：为不同的git项目指定不同的rsa秘钥对。 操作步骤： 1、生成一个新的自定义ssh密钥对。使用-C设置自定义的秘钥描述，并且，在交互弹出的文件保存路径时，要使用自定义的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-11-07T15:35:12.000Z">
-<meta property="article:modified_time" content="2023-01-27T08:44:59.442Z">
+<meta property="article:modified_time" content="2023-01-27T08:53:07.994Z">
 <meta property="article:author" content="Vincent Zhu">
 <meta property="article:tag" content="git">
 <meta property="article:tag" content="ssh">
@@ -87,7 +87,7 @@
 
 
 
-<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">最近更新</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2023/01/27/2023-plan/"><span class="title">2023年度计划</span></a><a class="item title" href="/2023/01/07/FlatBuffer-Startup/"><span class="title">FlatBuffer Startup</span></a><a class="item title" href="/2022/07/20/design-pattern-01-startup/"><span class="title">设计模式(1)-开篇</span></a><a class="item title" href="/2022/07/20/design-pattern-02-simple-factory/"><span class="title">设计模式(2)-简单工厂模式</span></a><a class="item title" href="/2022/07/20/design-pattern-03-factory/"><span class="title">设计模式(3)-工厂模式</span></a></div></widget>
+<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">最近更新</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2022/10/23/roadmap/"><span class="title">软件开发成长路线图</span></a><a class="item title" href="/2022/12/11/software-deisgn-a%20cxx-error-code-design/"><span class="title">软件设计：一种C++项目的错误码设计实践</span></a><a class="item title" href="/2022/10/06/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2001%20%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span class="title">动手学深度学习 - 01 开发环境搭建</span></a><a class="item title" href="/2022/10/07/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2002%20%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B/"><span class="title">动手学深度学习 - 02 训练一个线性回归模型</span></a><a class="item title" href="/2022/11/07/%E5%90%8C%E4%B8%80%E5%8F%B0%E6%9C%BA%E5%99%A8%E4%BD%BF%E7%94%A8%E5%A4%9A%E4%B8%AAgitee%E8%B4%A6%E5%8F%B7%E5%BC%80%E5%8F%91/"><span class="title">同一台机器使用多个gitee账号开发</span></a></div></widget>
 
 
 
@@ -113,24 +113,19 @@
 <p>操作步骤：</p>
 <p>1、生成一个新的自定义ssh密钥对。使用<code>-C</code>设置自定义的秘钥描述，并且，在交互弹出的文件保存路径时，要使用自定义的路径。如果直接回车会覆盖已有的id_rsa秘钥！！！</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="string">&#x27;YourCustomizedName&#x27;</span></span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/Users/zgd/.ssh/id_rsa): /Users/zgd/.ssh/customized_rsa --这里可改成自定义的秘钥名称,与默认的id_rsa区分开来</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase):</span><br><span class="line">Enter same passphrase again:</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
-
 <p>2、打开浏览器，使用第2个账号登入Gitee，添加这个新的ssh公钥。（具体可参加<a target="_blank" rel="noopener" href="https://gitee.com/help/articles/4181#article-header0">Gitee教程</a>）</p>
 <p>3、将第2个Gitee账号下的项目clone到本地，例如：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> git@gitee.com:fatmouse007fatmouse007/clbench.git</span><br></pre></td></tr></table></figure>
-
 <p>此处改为你自己的工程路径，注意：必须使用<code>git</code>开头的仓库地址，这表示使用git协议，而不是https，只有使用git协议才会走ssh秘钥认证流程。</p>
 <p>4、修改<code>~/.ssh/config</code>配置，为不同的url指定不同的秘钥，这一步是关键。</p>
 <p>示例如下：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Host gitee.com</span><br><span class="line">  HostName gitee.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile /Users/zgd/.ssh/163.rsa</span><br><span class="line">  IdentitiesOnly <span class="built_in">yes</span></span><br><span class="line">Host fatmouse007.gitee.com</span><br><span class="line">  HostName gitee.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile /Users/zgd/.ssh/fatmouse007_rsa</span><br><span class="line">  IdentitiesOnly <span class="built_in">yes</span></span><br></pre></td></tr></table></figure>
-
 <p>每一个配置项包含Host名称，以及实际的HostName，以及为这个url指定的私钥文件IdentityFile。以第2个配置项为例，当输入给ssh的url是<code>fatmouse007.gitee.com</code>，且用户名是git时，ssh会查找config，将url中 <code>fatmouse007.gitee.com</code> 部分替换为HostName <code>gitee.com</code>，并选择<code>fatmouse007_rsa</code>作为登录秘钥。如此，就实现了一个从自定义url到{实际url，自定义秘钥}的映射。</p>
 <p>5、设置git工程的remote url中的真实HostName为自定义的Host</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git remote -v</span><br><span class="line">origin	git@gitee.com:fatmouse007fatmouse007/clbench.git (fetch)</span><br><span class="line">origin	git@gitee.com:fatmouse007fatmouse007/clbench.git (push)</span><br><span class="line"></span><br><span class="line">$ git remote set-url origin git@fatmouse007.gitee.com:fatmouse007fatmouse007/clbench.git</span><br></pre></td></tr></table></figure>
-
 <p>这里将<code>gitee.com</code>替换成了<code>fatmouse007.gitee.com</code>，只是一个示例，具体请按照你实际的url替换。</p>
 <p>6、验证配置是否成功</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ ssh -T git@fatmouse007.gitee.com</span><br><span class="line">Hi fatmouse007! You<span class="string">&#x27;ve successfully authenticated, but GITEE.COM does not provide shell access.</span></span><br></pre></td></tr></table></figure>
-
 <p>以上表示ssh秘钥配置成功，以后可以直接<code>git push</code>。</p>
 
 
@@ -319,5 +314,20 @@
 
 
   </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>
