@@ -20,13 +20,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
   
-  <title>分类：设计模式 - Coder Zhu</title>
+  <title>标签：Hexo - Coder Zhu</title>
 
   
     <meta name="description" content="One Coder&#39;s Programming Summary">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Coder Zhu">
-<meta property="og:url" content="https://vincentzhu007.github.io/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:url" content="https://vincentzhu007.github.io/tags/Hexo/index.html">
 <meta property="og:site_name" content="Coder Zhu">
 <meta property="og:description" content="One Coder&#39;s Programming Summary">
 <meta property="og:locale" content="zh_CN">
@@ -102,31 +102,15 @@
 
   
 
-<div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a class="active" href="/categories">分类：设计模式</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
+<div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a href="/categories">分类</a><a class="active" href="/tags">标签：Hexo</a><a href="/archives">归档</a></nav></div>
 
-  <div class="post-list post"><a class="post-card post " href="/2022/07/20/design-pattern-06-builder/">
-<article class="md-text"><h2 class="post-title">设计模式(6)-建造模式</h2><div class="excerpt"><p>建造模式是什么？建造模式是一种创建对象的方式，通过使用建造模式，可以将对象的内部状态表示和对象的创建过程分割开。
-某些情况下对象内部的状态必须在一定的规则约束下才有意义，典型的几种情况如下： （1）对象内部的多个属性字段要同时有效。比如：创建一封电子邮件，需要填好发件人、收件人、主题、内容等，才能作为一封完整的邮件。而填写过程，可以用专门的建造方法来负责实现，其返回的结果是一个有效的邮件对象...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:21:36.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
-</a><a class="post-card post " href="/2022/07/20/design-pattern-05-singleton/">
-<article class="md-text"><h2 class="post-title">设计模式(5)-单例模式</h2><div class="excerpt"><p>单例模式是什么？单例模式，顾名思义，就是整个类只提供一个实例对象，供外部使用。
-从设计模式的角度看，单例模式是一种退化的简单工厂模式，其中工厂的创建方法就是产品类自身的静态方法，并且创建出的产品对象只有一个，循环使用。
-单例模式的三个要素是：（1）单例类只有一个实例对象；（2）单例类必须自行创建此实例对象；（3）单例类必须自行向系统提供此实例对象。
-为了得到单例，需要对类的构造函数进行限制，...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:21:23.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
-</a><a class="post-card post " href="/2022/07/20/design-pattern-04-abstract-factory/">
-<article class="md-text"><h2 class="post-title">设计模式(4)-抽象工厂模式</h2><div class="excerpt"><p>抽象工厂模式是什么？前面两节分别介绍了简单工厂模式和工厂模式。其中，简单工厂模式提供了单个创建接口，通过指定入参来创建不同的具体产品，比如水果农场例子中的苹果和葡萄。工厂模式则利用多态性，采用抽象工厂和具体的苹果工厂、葡萄工厂来实现创建水果对象的功能，生产新的水果只需添加新的具体工厂即可，符合“开闭原则”。
-工厂模式中，一个抽象工厂可以处理一种抽象产品，那么，如果是两种抽象产品呢？如果这两种...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:21:08.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
-</a><a class="post-card post " href="/2022/07/20/design-pattern-03-factory/">
-<article class="md-text"><h2 class="post-title">设计模式(3)-工厂模式</h2><div class="excerpt"><p>工厂模式是什么？工厂模式又称为虚拟构造子模式或多态工厂模式，是在简单工厂模式的基础上，将核心角色“工厂类”改为层次继承结构，提取出一个抽象工厂的角色，由对应具体产品的具体工厂类来继承此抽象工厂，并提供抽象工厂的多态性，对外提供统一的产品创建接口。
-工厂模式示意图如下所示。可以看出，创建产品的职责不再和简单工厂模式那样，集中在单个工厂类，而是分散到各具体工厂类，这样，既继承了简单工厂模式的优点...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:20:54.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
-</a><a class="post-card post " href="/2022/07/20/design-pattern-02-simple-factory/">
-<article class="md-text"><h2 class="post-title">设计模式(2)-简单工厂模式</h2><div class="excerpt"><p>简单工厂模式是什么？简单工厂是指在基类中对一系列具有相同行为的对象按需创建的方法。被创建的对象通常具有共同的基类。
-类图如下：
+  <div class="post-list post"><a class="post-card post " href="/2023/01/27/how-to-build-blog-with-hexo/">
+<article class="md-text"><h2 class="post-title">如何使用Hexo构建个人博客</h2><div class="excerpt"><p>本文记录Hexo入门使用流程。
+1、安装Hexo
+Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。
 
-简单工厂示例：水果
-/** * 简单工厂模式 */#include &lt;iostream&gt;#include &lt;string&gt;#include &lt;algorithm&gt;class Fruit &#123;public:    virt...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:19:15.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
-</a><a class="post-card post " href="/2022/07/20/design-pattern-01-startup/">
-<article class="md-text"><h2 class="post-title">设计模式(1)-开篇</h2><div class="excerpt"><p>Hi，这是设计模式专栏的开篇！
-</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-07-20T15:13:43.000Z">2022-07-20</time></span><span class="cap breadcrumb">设计模式</span></div></article>
+Hexo的运行依赖于Node.js。首先安装Node.js，然后使用Node.js中自带的包管理工具npm安装Hexo模块。
+本文以MAC OS为例演示Hexo安装，其它系统稍有区别，可参考结尾...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-01-27T07:48:43.000Z">2023-01-27</time></span><span class="cap breadcrumb">开发工具</span></div></article>
 </a></div>
   
 
