@@ -26,12 +26,12 @@
     <meta name="description" content="定义一个线性模型：$$y &#x3D; Wx + B + \epsilon$$其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 1from mxnet import autograd, nd  生成数据1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动手学深度学习 - 02 训练一个线性回归模型">
-<meta property="og:url" content="https://vincentzhu007.github.io/project/2022/10/07/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2002%20%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:url" content="https://vincentzhu007.github.io/2022/10/07/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2002%20%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Coder Zhu&#39;s Blog">
 <meta property="og:description" content="定义一个线性模型：$$y &#x3D; Wx + B + \epsilon$$其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 $B$ 是参数，$\epsilon$ 是随机噪声。 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。 1from mxnet import autograd, nd  生成数据1">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-10-07T14:11:35.000Z">
-<meta property="article:modified_time" content="2023-01-27T06:24:28.351Z">
+<meta property="article:modified_time" content="2023-01-27T06:35:29.986Z">
 <meta property="article:author" content="Vincent Zhu">
 <meta property="article:tag" content="Code, Software">
 <meta name="twitter:card" content="summary">
@@ -43,7 +43,7 @@
 
   
     
-<link rel="stylesheet" href="/project/css/main.css">
+<link rel="stylesheet" href="/css/main.css">
 
   
 
@@ -69,9 +69,9 @@
 
   
 
-<header class="header"><div class="logo-wrap"><a class="title" href="/project/"><div class="main" ff="title">Coder Zhu's Blog</div><div class="sub cap">Happy Coding, Happy Life!</div></a></div>
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">Coder Zhu's Blog</div><div class="sub cap">Happy Coding, Happy Life!</div></a></div>
 
-<nav class="menu dis-select"><a class="nav-item active" href="/project/">博客</a><a class="nav-item" href="/project/wiki">项目</a><a class="nav-item" href="/project/about/">关于</a></nav>
+<nav class="menu dis-select"><a class="nav-item active" href="/">博客</a><a class="nav-item" href="/wiki">项目</a><a class="nav-item" href="/about/">关于</a></nav>
 </header>
 
 
@@ -97,7 +97,7 @@
 
 
 
-<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/project/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/project/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/project/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a> <span class="sep"></span> <a class="cap breadcrumb-link" href="/project/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">动手学深度学习</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-10-07T14:11:35.000Z">2022-10-07</time></div></div>
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a> <span class="sep"></span> <a class="cap breadcrumb-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">动手学深度学习</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-10-07T14:11:35.000Z">2022-10-07</time></div></div>
 
 <article class='md-text content post'>
 <h1 class="article-title"><span>动手学深度学习 - 02 训练一个线性回归模型</span></h1>
@@ -270,7 +270,7 @@ Epoch 4, average loss: 0.000386
 
 </article>
 
-<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/project/2022/10/23/roadmap/">软件开发成长路线图</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/project/2022/10/06/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2001%20%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">动手学深度学习 - 01 开发环境搭建</a></div></section></div>
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2022/10/23/roadmap/">软件开发成长路线图</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2022/10/06/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2001%20%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">动手学深度学习 - 01 开发环境搭建</a></div></section></div>
 
 
 
@@ -438,7 +438,7 @@ Epoch 4, average loss: 0.000386
 <!-- required -->
 
   
-<script src="/project/js/main.js" async></script>
+<script src="/js/main.js" async></script>
 
 
 
