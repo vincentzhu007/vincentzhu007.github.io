@@ -104,7 +104,22 @@
 
 <div class="nav-wrap"><nav class="sub post cap"><a href="/">近期发布</a><a href="/categories">分类</a><a class="active" href="/tags">标签：CUDA</a><a href="/archives">归档</a></nav></div>
 
-  <div class="post-list post"><a class="post-card post " href="/2023/09/29/cuda-002-Hello-CUDA/">
+  <div class="post-list post"><a class="post-card post " href="/2023/10/03/cuda-003-%E7%BA%BF%E7%A8%8B%E7%B4%A2%E5%BC%95/">
+<article class="md-text"><h2 class="post-title">CUDA编程笔记003. 线程索引</h2><div class="excerpt"><p>1、线程索引CUDA提供了两层的层次线程模型：
+
+Grid：
+定义：执行同一个kernel代码的所有thread集合称为一个grid。
+位于同一grid中的thread共享相同的global memory。
+一个grid包含多个block。
+
+
+Block：
+定义：一种thread集合，同一block的thread可通过block内同步和block内显存贡献来相互协作。
+
+
+
+对应地，在ke...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-10-03T05:11:49.000Z">2023-10-03</time></span><span class="cap breadcrumb">CUDA编程笔记</span></div></article>
+</a><a class="post-card post " href="/2023/09/29/cuda-002-Hello-CUDA/">
 <article class="md-text"><h2 class="post-title">CUDA编程笔记002. Hello CUDA</h2><div class="excerpt"><p>使用CMake开发第一个CUDA工程hello-cuda。
 源代码目录如下：
 $ tree hello-cuda/.├── CMakeLists.txt└── hello_cuda.cu

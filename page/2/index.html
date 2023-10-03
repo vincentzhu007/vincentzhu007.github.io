@@ -102,7 +102,10 @@
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">近期发布</a><a href="/categories">分类</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
 
-  <div class="post-list post"><a class="post-card post " href="/2023/02/20/cpptalk-001-dtor-with-exit/">
+  <div class="post-list post"><a class="post-card post " href="/2023/02/22/aitalk-001-mnist-with-tflite/">
+<article class="md-text"><h2 class="post-title">AI杂谈001. 使用TFLite实现MNIST推理</h2><div class="excerpt"><p>import tensorflow as tffrom tensorflow import kerasimport numpy as npimport matplotlib.pyplot as pltimport randomprint(tf.__version__)
+2023-02-22 22:47:18.176362: I tensorflow/core/platform/cpu_fea...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-02-22T15:44:48.000Z">2023-02-22</time></span><span class="cap breadcrumb">AI杂谈</span></div></article>
+</a><a class="post-card post " href="/2023/02/20/cpptalk-001-dtor-with-exit/">
 <article class="md-text"><h2 class="post-title">C++杂谈001. exit()时的对象析构</h2><div class="excerpt"><p>当调用exit()函数终止进程时，会触发C++静态和全局对象的析构，但局部对象不会被析构。
 一个简单的demo程序如下：
 class Foo &#123; public:  Foo(const std::string &amp;desc) : desc_(desc) &#123;    cout &lt;&lt; &quot;call Foo ctor of &quot; &lt;&lt; ...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-02-20T16:52:23.000Z">2023-02-21</time></span><span class="cap breadcrumb">C++杂谈</span></div></article>
@@ -162,15 +165,6 @@ y = Wx + B + \epsilon其中，$x$ 和 $y$ 分别是输入输出数据，$W$ 和 
 现在，我们使用mxnet的随机模块，生成特征$x$和标签$y$，使用反向传播来训练这个线性回归网络，而$W$和$B$就是网络中的权重。
 from mxnet import autograd, nd
 生成数据num_bat...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-10-07T14:11:35.000Z">2022-10-07</time></span><span class="cap breadcrumb">深度学习</span></div></article>
-</a><a class="post-card post " href="/2022/10/06/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2001%20%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
-<article class="md-text"><h2 class="post-title">动手学深度学习 - 01 开发环境搭建</h2><div class="excerpt"><p>这是跟随李沐大神《动手学深度学习》的课程笔记。
-1、概念区分
-人工智能：让机器具备像人一样的智能。
-机器学习：不用显式给机器编程，让机器自身通过学习来获取问题的解法。
-深度学习：使用神经网络等更复杂的模型来学习。
-
-范围包含关系：人工智能 &gt; 机器学习 &gt; 深度学习
-2、开发环境安装MacOS安装开发环境，参考：http://zh.gluon.ai/chapter_prerequ...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-10-06T14:01:55.000Z">2022-10-06</time></span><span class="cap breadcrumb">深度学习</span></div></article>
 </a></div>
   
   <div class='paginator-wrap dis-select'>
