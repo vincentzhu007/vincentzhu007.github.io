@@ -102,7 +102,9 @@
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">近期发布</a><a href="/categories">分类</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
 
-  <div class="post-list post"><a class="post-card post " href="/2023/10/03/cuda-003-%E7%BA%BF%E7%A8%8B%E7%B4%A2%E5%BC%95/">
+  <div class="post-list post"><a class="post-card post " href="/2023/10/06/cuda-004-%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6/">
+<article class="md-text"><h2 class="post-title">CUDA编程笔记004. 测量kernel耗时</h2><div class="excerpt"><p>1、使用cpu时钟测量kernel耗时#include &lt;sys/time.h&gt;double CpuSeconds() &#123;  struct timeval tp;  gettimeofday(&amp;tp, NULL); // 获取当前cpu时间戳。  return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);&#1...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-10-06T06:49:50.000Z">2023-10-06</time></span><span class="cap breadcrumb">CUDA编程笔记</span></div></article>
+</a><a class="post-card post " href="/2023/10/03/cuda-003-%E7%BA%BF%E7%A8%8B%E7%B4%A2%E5%BC%95/">
 <article class="md-text"><h2 class="post-title">CUDA编程笔记003. 线程索引</h2><div class="excerpt"><p>1、线程索引CUDA提供了两层的层次线程模型：
 
 Grid：
@@ -173,13 +175,6 @@ GTX 1050Ti-4G.
 
 
 “自动化” 的最大作用是：帮助程序...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-04-16T13:06:38.000Z">2023-04-16</time></span><span class="cap breadcrumb">浅尝辄止DevOps</span></div></article>
-</a><a class="post-card post " href="/2023/02/22/tools-001-hexo-not-show-image/">
-<article class="md-text"><h2 class="post-title">开发工具001. hexo不显示图片</h2><div class="excerpt"><p>问题hexo的markdown文章渲染后不能显示本地图片。
-解法1、配置hexo根目录__config.yml：
-post_asset_folder: true
-2、在hexo博客根目录安装``
-npm install https://github.com/CodeFalling/hexo-asset-image --save
-3、在博客的source/_posts下创建和md文件同名的目录...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-02-22T16:09:46.000Z">2023-02-23</time></span><span class="cap breadcrumb">开发工具</span></div></article>
 </a></div>
   
   <div class='paginator-wrap dis-select'>
