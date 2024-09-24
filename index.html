@@ -102,7 +102,11 @@
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">近期发布</a><a href="/categories">分类</a><a href="/tags">标签</a><a href="/archives">归档</a></nav></div>
 
-  <div class="post-list post"><a class="post-card post " href="/2024/01/23/llm-infer-02-huggingface-export-onnx/">
+  <div class="post-list post"><a class="post-card post " href="/2024/09/24/devtool-001-%E6%90%AD%E5%BB%BAjupyter%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1/">
+<article class="md-text"><h2 class="post-title">开发工具-001-搭建jupyter远程服务</h2><div class="excerpt"><p>1、安装jupyterconda create -n jupyter python=3.10pip install jupyter
+2、配置jupyter设置密码，生成秘钥文件：
+jupyter notebook passwordEnter password:Verify password:[NotebookPasswordApp] Wrote hashed password to /you...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2024-09-24T17:17:07.000Z">2024-09-25</time></span><span class="cap breadcrumb">开发工具大集合</span></div></article>
+</a><a class="post-card post " href="/2024/01/23/llm-infer-02-huggingface-export-onnx/">
 <article class="md-text"><h2 class="post-title">LLM推理02-HuggingFace LLM导出ONNX</h2><div class="excerpt"><p>官方指导：https://huggingface.co/docs/transformers/v4.35.1/zh/serialization
 1、下载TinyLLM模型代码
 mkdir llmkitgit clone https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0
@@ -186,15 +190,6 @@ Block：
 $ tree hello-cuda/.├── CMakeLists.txt└── hello_cuda.cu
 1、编写CMakeList.txt
 cmake_minimum_required(VERSION 3.14)# CMake支持CUDA语言，会自动识别.cu文件，并使用nvcc对齐编译。project(he...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-09-29T16:39:14.000Z">2023-09-30</time></span><span class="cap breadcrumb">CUDA编程笔记</span></div></article>
-</a><a class="post-card post " href="/2023/09/29/cuda-001-%E5%AE%89%E8%A3%85CUDA/">
-<article class="md-text"><h2 class="post-title">CUDA编程笔记001. 安装CUDA</h2><div class="excerpt"><p>操作环境：Dell笔记本
-
-Ubuntu 22.04 x86_64
-Nvidia Geforce GTX 1050Ti
-
-安装指导：https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html 3.10章节
-1、检查显卡硬件
-$ lspci | grep -i nvidia01:00.0 VGA compatibl...</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2023-09-29T16:32:11.000Z">2023-09-30</time></span><span class="cap breadcrumb">CUDA编程笔记</span></div></article>
 </a></div>
   
   <div class='paginator-wrap dis-select'>
