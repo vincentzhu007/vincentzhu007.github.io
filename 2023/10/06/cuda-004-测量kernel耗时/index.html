@@ -1,46 +1,350 @@
-.l_body {
-  display: flex;
-  margin: auto;
-  padding: 0 var(--gap-l);
-  justify-content: center;
-}
-.l_body .l_left {
-  z-index: 8;
-  width: var(--width-left);
-  flex-shrink: 0;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
-}
-.l_body .l_main {
-  flex-shrink: 1;
-  flex-grow: 1;
-  width: 320px;
-  max-width: var(--width-main);
-}
-@media screen and (max-width: $device-mobile-max) {
-  .mobile-only {
-    display: block !important;
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>CUDA编程笔记004. 测量kernel耗时 - Coder Zhu</title>
+
+  
+    <meta name="description" content="1、使用cpu时钟测量kernel耗时#include &lt;sys&#x2F;time.h&gt;double CpuSeconds() &amp;#123;  struct timeval tp;  gettimeofday(&amp;tp, NULL); &#x2F;&#x2F; 获取当前cpu时间戳。  return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);&amp;#125;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CUDA编程笔记004. 测量kernel耗时">
+<meta property="og:url" content="https://vincentzhu007.github.io/2023/10/06/cuda-004-%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6/index.html">
+<meta property="og:site_name" content="Coder Zhu">
+<meta property="og:description" content="1、使用cpu时钟测量kernel耗时#include &lt;sys&#x2F;time.h&gt;double CpuSeconds() &amp;#123;  struct timeval tp;  gettimeofday(&amp;tp, NULL); &#x2F;&#x2F; 获取当前cpu时间戳。  return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);&amp;#125;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/10/06/cuda-004-%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6/grid_and_block.png">
+<meta property="article:published_time" content="2023-10-06T06:49:50.000Z">
+<meta property="article:modified_time" content="2025-04-02T18:36:37.882Z">
+<meta property="article:author" content="Vincent Zhu">
+<meta property="article:tag" content="CUDA">
+<meta property="article:tag" content="GPU">
+<meta property="article:tag" content="线程">
+<meta property="article:tag" content="block">
+<meta property="article:tag" content="grid">
+<meta property="article:tag" content="nvprof">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vincentzhu007.github.io/2023/10/06/cuda-004-%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6/grid_and_block.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.6.0/style.css" rel="stylesheet">
+    
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+    
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">Coder Zhu</div><div class="sub cap">Veni, Vidi, Vici</div></a></div>
+
+<nav class="menu dis-select"><a class="nav-item active" href="/">博客</a><a class="nav-item" href="/wiki">项目</a><a class="nav-item" href="/about/">关于</a></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">CUDA编程笔记004. 测量kernel耗时</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E4%BD%BF%E7%94%A8cpu%E6%97%B6%E9%92%9F%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6"><span class="toc-text">1、使用cpu时钟测量kernel耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%A3%80%E6%9F%A5cuda%E6%8E%A5%E5%8F%A3%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-text">2、检查cuda接口返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81cuda-kernel%E5%AE%9E%E7%8E%B0"><span class="toc-text">3、cuda kernel实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E8%B0%83%E7%94%A8cuda-kernel"><span class="toc-text">4、调用cuda kernel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E4%BD%BF%E7%94%A8nvprof%E6%B5%8B%E9%87%8F%E8%80%97%E6%97%B6"><span class="toc-text">5、使用nvprof测量耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/CUDA%E7%BC%96%E7%A8%8B%E7%AC%94%E8%AE%B0/">CUDA编程笔记</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-10-06T06:49:50.000Z">2023-10-06</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>CUDA编程笔记004. 测量kernel耗时</span></h1>
+<h3 id="1、使用cpu时钟测量kernel耗时"><a href="#1、使用cpu时钟测量kernel耗时" class="headerlink" title="1、使用cpu时钟测量kernel耗时"></a>1、使用cpu时钟测量kernel耗时</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">double</span> <span class="title function_">CpuSeconds</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">tp</span>;</span></span><br><span class="line">  gettimeofday(&amp;tp, <span class="literal">NULL</span>); <span class="comment">// 获取当前cpu时间戳。</span></span><br><span class="line">  <span class="keyword">return</span> ((<span class="type">double</span>)tp.tv_sec + (<span class="type">double</span>)tp.tv_usec * <span class="number">1e-6</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man2/gettimeofday.2.html">man gettimeofday</a></li>
+</ul>
+<h3 id="2、检查cuda接口返回值"><a href="#2、检查cuda接口返回值" class="headerlink" title="2、检查cuda接口返回值"></a>2、检查cuda接口返回值</h3><p>cuda的api会统一返回<code>cudaError_t</code>错误码，可以通过<code>cudaGetErrorString()</code>获取错误码对应的错误字符串。</p>
+<p>将校验错误码的路径归纳为下面的宏，方便使用。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CHECK(call)       \</span></span><br><span class="line"><span class="meta">  do &#123;                    \</span></span><br><span class="line"><span class="meta">    const cudaError_t <span class="keyword">error</span> = call; \</span></span><br><span class="line"><span class="meta">    <span class="keyword">if</span> (<span class="keyword">error</span> != cudaSuccess) &#123;     \</span></span><br><span class="line"><span class="meta">      printf(<span class="string">&quot;Error: %s: %d, &quot;</span>, __FILE__, __LINE__); \</span></span><br><span class="line"><span class="meta">      printf(<span class="string">&quot;code: %d, reason: %s\n&quot;</span>, <span class="keyword">error</span>, cudaGetErrorString(<span class="keyword">error</span>)); \</span></span><br><span class="line"><span class="meta">      exit(1);            \</span></span><br><span class="line"><span class="meta">    &#125;                     \</span></span><br><span class="line"><span class="meta">  &#125; while(0)</span></span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html#group__CUDART__MEMORY_1g37d37965bfb4803b6d4e59ff26856356">API手册：cudaMalloc</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html#group__CUDART__TYPES_1g3f51e3575c2178246db0a94a430e0038">API手册：cudaError</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__ERROR.html#group__CUDART__ERROR_1g4bc9e35a618dfd0877c29c8ee45148f1">API手册：cudaGetErrorString</a></li>
+</ul>
+<h3 id="3、cuda-kernel实现"><a href="#3、cuda-kernel实现" class="headerlink" title="3、cuda kernel实现"></a>3、cuda kernel实现</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">__global__ <span class="type">void</span> <span class="title function_">kernelAdd</span><span class="params">(<span class="type">float</span> *d_a, <span class="type">float</span> *d_b, <span class="type">float</span> *d_c, <span class="type">int</span> n_elem)</span> &#123;</span><br><span class="line">  <span class="type">int</span> id = threadIdx.x + blockIdx.x * blockDim.x;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// block * grid尺寸可能大于n_elem。超过n_elem的部分，就不计算了。</span></span><br><span class="line">  <span class="keyword">if</span> (id &lt; n_elem) &#123;</span><br><span class="line">    d_c[id] = d_a[id] + d_b[id];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4、调用cuda-kernel"><a href="#4、调用cuda-kernel" class="headerlink" title="4、调用cuda kernel"></a>4、调用cuda kernel</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 定义block和grid的尺寸，这里只使用了一维。</span></span><br><span class="line">dim3 <span class="title function_">block</span><span class="params">(<span class="built_in">std</span>::min(n_elem, max_thread_per_block))</span>;</span><br><span class="line">dim3 <span class="title function_">grid</span><span class="params">((n_elem + block.x - <span class="number">1</span>) / block.x)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> start_time = CpuSeconds();</span><br><span class="line"></span><br><span class="line"><span class="comment">// kernel调用是异步的，此句执行后会立即返回到host侧，需要手动调用cuda同步函数等待所有线程执行完毕。</span></span><br><span class="line">kernelAdd&lt;&lt;&lt;grid, block&gt;&gt;&gt;(d_a, d_b, d_c, n_elem);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这一行非常重要！不做手动同步，测出的耗时只是kernel异步执行api返回到host的耗时，</span></span><br><span class="line"><span class="comment">// 并不是所有线程执行完的耗时。因此这里需要手动同步，等待所有线程执行结束。</span></span><br><span class="line">cudaDeviceSynchronize(); </span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;cuda add elapsed: %.6lfs\n&quot;</span>, CpuSeconds() - start_time);</span><br></pre></td></tr></table></figure>
+<p>根据实际计算量划分block和grid的示意图如下：<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/10/06/cuda-004-%E6%B5%8B%E9%87%8Fkernel%E8%80%97%E6%97%B6/grid_and_block.png" alt="grid_and_block"></p>
+<p>可以看到，虽然cuda生成了grid * block个线程，但最后一个block中的线程不一定会被全部用掉。</p>
+<p><strong>如何获取max_thread_per_block？</strong></p>
+<p>在host侧设置的gridDims和blockDims，受具体的硬件限制，在不同的GPU的上限是不同的。cuda提供了接口获取当前GPU硬件的上限信息。</p>
+<p>代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cudaDeviceProp device_prop;</span><br><span class="line"><span class="type">int</span> dev = <span class="number">0</span>;</span><br><span class="line">CHECK(cudaGetDeviceProperties(&amp;device_prop, dev));</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;Using device %d: %s, maxThreadsPerBlock: %d.\n\n&quot;</span>,</span><br><span class="line">       dev, device_prop.name, device_prop.maxThreadsPerBlock);</span><br><span class="line">CHECK(cudaSetDevice(dev));</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html#group__CUDART__DEVICE_1g1bf9d625a931d657e08db2b4391170f0">API手册：cudaGetDeviceProperties</a></li>
+</ul>
+<h3 id="5、使用nvprof测量耗时"><a href="#5、使用nvprof测量耗时" class="headerlink" title="5、使用nvprof测量耗时"></a>5、使用nvprof测量耗时</h3><p>nvprof加上所需执行的应用命令，即可执行profiling。本demo效果如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ nvprof ./cuda_vector_add_timing</span><br><span class="line">CUDA Demo: add two vectors.</span><br><span class="line">==191428== NVPROF is profiling process 191428, <span class="built_in">command</span>: ./cuda_vector_add_timing</span><br><span class="line">Using device 0: NVIDIA GeForce GTX 1050 Ti, maxThreadsPerBlock: 1024.</span><br><span class="line"></span><br><span class="line">testing n_elem: 16777216 ...</span><br><span class="line">cpu add elapsed:  0.069825s</span><br><span class="line">cuda block:(1024, 1, 1), grid:(16384, 1, 1)</span><br><span class="line">cuda add elapsed: 0.002238s</span><br><span class="line">cpu result : [1.735893, 0.446092, 1.168937, 1.654771, 1.396988, 1.141601, 0.817212, 1.561706, 0.467451, 1.386464, ...]</span><br><span class="line">cuda result: [1.735893, 0.446092, 1.168937, 1.654771, 1.396988, 1.141601, 0.817212, 1.561706, 0.467451, 1.386464, ...]</span><br><span class="line">cuda equals to cpu? <span class="built_in">yes</span>.</span><br><span class="line"></span><br><span class="line">==191428== Profiling application: ./cuda_vector_add_timing</span><br><span class="line">==191428== Profiling result:</span><br><span class="line">            Type  Time(%)      Time     Calls       Avg       Min       Max  Name</span><br><span class="line"> GPU activities:   67.72%  39.002ms         1  39.002ms  39.002ms  39.002ms  [CUDA memcpy DtoH]</span><br><span class="line">                   28.77%  16.571ms         2  8.2853ms  8.0925ms  8.4781ms  [CUDA memcpy HtoD]</span><br><span class="line">                    3.51%  2.0214ms         1  2.0214ms  2.0214ms  2.0214ms  kernelAdd(<span class="built_in">float</span>*, <span class="built_in">float</span>*, <span class="built_in">float</span>*, int)</span><br></pre></td></tr></table></figure>
+<p>计算两个16M数组的加法，CPU耗时70ms，GPU耗时2.23ms，是CPU的1/32。通过profiling结果可以看到，kernelAdd耗时2.02ms，比我们在host侧自己统计的耗时要短一点。这是因为nvprof能够严格测出device侧kernel执行耗时，而不必加上额外的host-device通信操作，更加精确。另外，host-device单次内存拷贝时间是8ms，是计算耗时的4倍。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://developer.nvidia.com/zh-cn/blog/cuda-%E4%B8%93%E4%B8%9A%E6%8F%90%E7%A4%BA%EF%BC%9Anvprof-%E6%98%AF%E4%BD%A0%E4%BE%BF%E6%8D%B7%E7%9A%84%E9%80%9A%E7%94%A8-gpu-%E5%89%96%E6%9E%90%E5%99%A8/">CUDA 专业提示：nvprof 是你便捷的通用 GPU 剖析器</a></p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>以上通过CPU时间戳和nvprof两种方式测量了kernel执行耗时。</p>
+<p>本文示例完整代码请见：<a target="_blank" rel="noopener" href="https://github.com/vincentzhu007/CppKit/blob/main/src/cuda/cuda_vector_add_timing.cu">cuda_vector_add_timing.cu</a>。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>[1] “Professional Cuda C Programming” Chapter 2.</p>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/10/29/cuda-optimize-001-trt-on-sd/">CUDA优化001. TensorRT加速SD的优化</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/10/03/cuda-003-%E7%BA%BF%E7%A8%8B%E7%B4%A2%E5%BC%95/">CUDA编程笔记003. 线程索引</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.18.5';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
   }
-  .l_body {
-    padding: 0;
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
   }
-  .l_body .l_left {
-    position: fixed;
-    transform: translateX(-320px);
-    margin: 0;
-    left: 0;
-    background: var(--site-bg);
-    box-shadow: $boxshadow-card-float;
-    z-index: 9;
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
   }
-  .l_body .l_main {
-    max-width: 100%;
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
   }
-  .l_body.mobile .l_left {
-    transition: transform 0.3s ease-out;
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
   }
-  .l_body.mobile.sidebar .l_left {
-    transform: translateX(0px);
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
   }
-}
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>

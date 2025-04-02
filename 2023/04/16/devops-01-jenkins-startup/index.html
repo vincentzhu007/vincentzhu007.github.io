@@ -1,46 +1,370 @@
-.l_body {
-  display: flex;
-  margin: auto;
-  padding: 0 var(--gap-l);
-  justify-content: center;
-}
-.l_body .l_left {
-  z-index: 8;
-  width: var(--width-left);
-  flex-shrink: 0;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
-}
-.l_body .l_main {
-  flex-shrink: 1;
-  flex-grow: 1;
-  width: 320px;
-  max-width: var(--width-main);
-}
-@media screen and (max-width: $device-mobile-max) {
-  .mobile-only {
-    display: block !important;
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>浅尝辄止DevOps 001. Jenkins使用入门 - Coder Zhu</title>
+
+  
+    <meta name="description" content="Jenkins是用Java编写的一款CI &amp; CD（Continious Integration 持续集成，Continious Delivery 持续交付）工具。简单来说，它提供的功能可以归纳为：软件流程“自动化”。 从“自动化”说起郑晔老师在《10x 程序员工作法》中，总结了关于高效程序员的四个要素：  以终为始 任务分解 沟通反馈 自动化   “自动化” 的最大作用是：帮助程序员从繁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅尝辄止DevOps 001. Jenkins使用入门">
+<meta property="og:url" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/index.html">
+<meta property="og:site_name" content="Coder Zhu">
+<meta property="og:description" content="Jenkins是用Java编写的一款CI &amp; CD（Continious Integration 持续集成，Continious Delivery 持续交付）工具。简单来说，它提供的功能可以归纳为：软件流程“自动化”。 从“自动化”说起郑晔老师在《10x 程序员工作法》中，总结了关于高效程序员的四个要素：  以终为始 任务分解 沟通反馈 自动化   “自动化” 的最大作用是：帮助程序员从繁">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/jenkins-image.png">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/jenkins-container.png">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/apk-install.png">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/jenkins-pipeline-log.png">
+<meta property="article:published_time" content="2023-04-16T13:06:38.000Z">
+<meta property="article:modified_time" content="2025-04-02T18:36:37.884Z">
+<meta property="article:author" content="Vincent Zhu">
+<meta property="article:tag" content="DevOps, Jenkins">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vincentzhu007.github.io/2023/04/16/devops-01-jenkins-startup/jenkins-image.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.6.0/style.css" rel="stylesheet">
+    
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+    
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">Coder Zhu</div><div class="sub cap">Veni, Vidi, Vici</div></a></div>
+
+<nav class="menu dis-select"><a class="nav-item active" href="/">博客</a><a class="nav-item" href="/wiki">项目</a><a class="nav-item" href="/about/">关于</a></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">浅尝辄止DevOps 001. Jenkins使用入门</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E2%80%9C%E8%87%AA%E5%8A%A8%E5%8C%96%E2%80%9D%E8%AF%B4%E8%B5%B7"><span class="toc-text">从“自动化”说起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Jenkins%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">Jenkins是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8CJenkins"><span class="toc-text">开始体验Jenkins</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Jenkins"><span class="toc-text">安装Jenkins</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEJenkins"><span class="toc-text">配置Jenkins</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2DevOps/">浅尝辄止DevOps</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-04-16T13:06:38.000Z">2023-04-16</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>浅尝辄止DevOps 001. Jenkins使用入门</span></h1>
+<p>Jenkins是用Java编写的一款CI &amp; CD（Continious Integration 持续集成，Continious Delivery 持续交付）工具。简单来说，它提供的功能可以归纳为：软件流程“自动化”。</p>
+<h3 id="从“自动化”说起"><a href="#从“自动化”说起" class="headerlink" title="从“自动化”说起"></a>从“自动化”说起</h3><p>郑晔老师在《10x 程序员工作法》中，总结了关于高效程序员的四个要素：</p>
+<ul>
+<li>以终为始</li>
+<li>任务分解</li>
+<li>沟通反馈</li>
+<li><mark class="tag-plugin mark" color="yellow">自动化</mark>
+</li>
+</ul>
+<p>“自动化” 的最大作用是：帮助程序员从繁杂重复的工作中解脱出来，也就是”偷懒“。我自己平时就有攒shell脚本的习惯，把平时使用的一些工作脚本收集起来，随时修改复用或者直接使用。这些脚本，算是对人工操作的一个记录，在需要时重放，降低人的负担，同时也能利用上计算机执行过程可重复的优点。</p>
+<h3 id="Jenkins是什么？"><a href="#Jenkins是什么？" class="headerlink" title="Jenkins是什么？"></a>Jenkins是什么？</h3><p>Jenkins解决的，是软件开发过程流程自动化问题，其中最突出的环节也就是 CI &amp; CD。</p>
+<p>CI（持续集成） 和 CD（持续交付） 是 <mark class="tag-plugin mark" color="yellow">敏捷开发</mark> 所提倡的开发方法。我个人把它的观点总结为：</p>
+<blockquote>
+<p>软件开发是一项复杂工程，为了降低项目失败的风险，需要尽早发现软件的问题，并快速解决。</p>
+</blockquote>
+<p>推向极限，就是在代码提交上库过程中随时验证、尽可能缩短从代码“开发态”到“可交付态”的Gap，最终做到代码随时可交付。</p>
+<p>CI的应用，举个例子，代码提交到仓库时，需要构建、测试，看看有没有引入Bug，导致程序异常。其实这个流程的各个步骤基本是固定的，可以很方便的用Jenkins来自动化。实际上，很多项目用的就是Jenkins：当程序员向主仓提交一个PR后，会触发预先配置好的git hook脚本（可以笼统理解为触发一个PR提交事件），它会通知Jenkins去拉取此PR，尝试合入到主仓最新代码上，然后编译、测试，这样来验证合入PR是否存在明显问题，这便是最典型的应用场景。</p>
+<p>Jenkins是一个框架，规定了问题解决的范式，但具体的细节，需要根据项目自身情况去配置，比如：项目用什么语言开发；用什么命令构建项目；如何执行测试；如何打包交付等等。</p>
+<h3 id="开始体验Jenkins"><a href="#开始体验Jenkins" class="headerlink" title="开始体验Jenkins"></a>开始体验Jenkins</h3><h4 id="安装Jenkins"><a href="#安装Jenkins" class="headerlink" title="安装Jenkins"></a>安装Jenkins</h4><p>这里采用Docker的形式来部署Jenkins，好处是方便迁移，并且通过容器隔离避免污染服务器环境。</p>
+<p>演示系统：MacOS 13.2 / Intel CPU</p>
+<p>前置条件：请确保已安装Docker（以MacOS为例，可去<a target="_blank" rel="noopener" href="https://www.docker.com/">Docker官网</a>下载dmg安装镜像）</p>
+<p>（1）获取jenkins Docker镜像</p>
+<p>这里使用Blue Ocean版本，在国内安装插件也更容易成功。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker pull jenkinsci/blueocean</span><br></pre></td></tr></table></figure>
+<p>效果：<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/04/16/devops-01-jenkins-startup/jenkins-image.png" alt="jenkins image"></p>
+<p>（2）运行Docker镜像</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run \</span><br><span class="line">--name jenkinsci-blueocean -u root \</span><br><span class="line">--<span class="built_in">rm</span>  -d -p 7005:8080 -p 50000:50000 \</span><br><span class="line">-v /Users/Xyz/SourceCode/docker/data:/var/jenkins_home \ <span class="comment"># 请替换成你自己环境中的路径!!!</span></span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean</span><br></pre></td></tr></table></figure>
+<p>参数解读：</p>
+<ul>
+<li><code>-d</code>：Detached，指定容器在后台运行；</li>
+<li><code>—rm</code>：如果已经存在运行的容器，就删除它；</li>
+<li><code>-v 宿主机路径:容器内路径</code>：挂载卷，这里将宿主端的<code>/Users/Xyz/SourceCode/docker/data</code>挂载到容器内的<code>/var/jenkins_home</code>，另外，将宿主端的 <code>/var/run/docker.sock</code> 文件挂载到容器的 <code>/var/run/docker.sock</code> 保证容器内的docker与服务器上docker的通讯；</li>
+<li><code>-p 宿主机端口:容器内端口</code>：，将容器内的端口映射到host侧；Jenkins代理默认通过TCP端口50000与Jenkins主机通信。</li>
+<li><code>-u root</code>：指定用户为root，防止出现执行权限问题；</li>
+</ul>
+<p>启动完毕后，在浏览器输入：127.0.0.1:7005 访问Jenkins网页（首次启动需要等待jenkins初始化环境），可用Docker查看容器日志：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/04/16/devops-01-jenkins-startup/jenkins-container.png" alt="jenkins container"></p>
+<p>下一步，网页会提示：解锁须输入管理员密码，在上方截图的容器日志中找到。输入密码重启Jenkins容器，就可以开始使用了。</p>
+<h4 id="配置Jenkins"><a href="#配置Jenkins" class="headerlink" title="配置Jenkins"></a>配置Jenkins</h4><p>首先是插件安装，Jenkins提供了大量扩展插件，方便用户使用，这里选择 “安装推荐插件”。（如果有少数插件安装报错，可以跳过）</p>
+<p>输入 <a target="_blank" rel="noopener" href="http://localhost:7005/">http://localhost:7005/</a>，访问主页。</p>
+<p>下面以我自己的一个开源C++项目：<a target="_blank" rel="noopener" href="https://github.com/vincentzhu007/flatbuffers_demo">vincentzhu007/flatbuffers_demo</a>为例，介绍基本配置流程。</p>
+<p><strong>安装C++编译工具链</strong></p>
+<p>Jenkins Docker镜像采用的OS是Alpine Linux，从Docker控制台登入Jenkins容器环境，安装C++工具链：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ apk update</span><br><span class="line">$ apk add cmake make gcc g++</span><br></pre></td></tr></table></figure>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/04/16/devops-01-jenkins-startup/apk-install.png" alt="apk install"></p>
+<p><strong>配置Jenkins项目</strong></p>
+<p>（1）输入名称：<code>flatbuffers_demo_ci</code>，选择“Multi-configuration project”类型，点击OK。</p>
+<p>（2）在“Build Environment”栏勾选“Delete workspace before build starts”，这样可以让每次构建都是基于干净的空目录。</p>
+<p>（3）在“Build”栏，点击“Add build step”，选择“Execute shell”，输入以下脚本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Start to download repo...&quot;</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/vincentzhu007/flatbuffers_demo.git</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Start to build...&quot;</span></span><br><span class="line"><span class="built_in">cd</span> flatbuffers_demo</span><br><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake .. &amp;&amp; make -j</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Finished build.&quot;</span></span><br></pre></td></tr></table></figure>
+<p>点击“Save”保存，会跳转到“Project flatbuffer_demo_ci”页面。</p>
+<p>（4）在左边栏点击“Build Now”，手动触发任务。在左下角便有编号为“#1”的流水线任务生成，点击跳转，可以查看流水线详情，在左边栏，点击“Console Output”可以查看构建日志。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/04/16/devops-01-jenkins-startup/jenkins-pipeline-log.png" alt="jenkins pipeline"></p>
+<p>以上是最简单的“手动触发流水线 + 内置构建节点”使用方式，后续会进一步介绍：流水线触发事件、配置分布式构建节点等内容。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>[1] <a target="_blank" rel="noopener" href="https://www.jenkins.io/zh/doc/tutorials/create-a-pipeline-in-blue-ocean/">Jenkins官方教程：使用Blue Ocean生成Pipeline</a><br>[2] <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/89312003">知乎：手把手教你使用 Jenkins+Docker 实现持续集成</a></p>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/06/14/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%20-%2003%20Stable-Diffusion%E5%88%9D%E4%BD%93%E9%AA%8C/">动手学深度学习 - 03 Stable Diffusion初体验</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/02/22/tools-001-hexo-not-show-image/">开发工具-002-hexo不显示图片</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.18.5';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
   }
-  .l_body {
-    padding: 0;
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
   }
-  .l_body .l_left {
-    position: fixed;
-    transform: translateX(-320px);
-    margin: 0;
-    left: 0;
-    background: var(--site-bg);
-    box-shadow: $boxshadow-card-float;
-    z-index: 9;
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
   }
-  .l_body .l_main {
-    max-width: 100%;
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
   }
-  .l_body.mobile .l_left {
-    transition: transform 0.3s ease-out;
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
   }
-  .l_body.mobile.sidebar .l_left {
-    transform: translateX(0px);
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
   }
-}
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>

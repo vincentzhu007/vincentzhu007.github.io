@@ -1,46 +1,416 @@
-.l_body {
-  display: flex;
-  margin: auto;
-  padding: 0 var(--gap-l);
-  justify-content: center;
-}
-.l_body .l_left {
-  z-index: 8;
-  width: var(--width-left);
-  flex-shrink: 0;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
-}
-.l_body .l_main {
-  flex-shrink: 1;
-  flex-grow: 1;
-  width: 320px;
-  max-width: var(--width-main);
-}
-@media screen and (max-width: $device-mobile-max) {
-  .mobile-only {
-    display: block !important;
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>AI杂谈001. 使用TFLite实现MNIST推理 - Coder Zhu</title>
+
+  
+    <meta name="description" content="import tensorflow as tffrom tensorflow import kerasimport numpy as npimport matplotlib.pyplot as pltimport randomprint(tf.__version__) 2023-02-22 22:47:18.176362: I tensorflow&#x2F;core&#x2F;platform&#x2F;cpu_featur">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI杂谈001. 使用TFLite实现MNIST推理">
+<meta property="og:url" content="https://vincentzhu007.github.io/2023/02/22/aitalk-001-mnist-with-tflite/index.html">
+<meta property="og:site_name" content="Coder Zhu">
+<meta property="og:description" content="import tensorflow as tffrom tensorflow import kerasimport numpy as npimport matplotlib.pyplot as pltimport randomprint(tf.__version__) 2023-02-22 22:47:18.176362: I tensorflow&#x2F;core&#x2F;platform&#x2F;cpu_featur">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/02/22/aitalk-001-mnist-with-tflite/output_4_0.png">
+<meta property="og:image" content="https://vincentzhu007.github.io/2023/02/22/aitalk-001-mnist-with-tflite/output_10_1.png">
+<meta property="article:published_time" content="2023-02-22T15:44:48.000Z">
+<meta property="article:modified_time" content="2025-04-02T18:36:37.879Z">
+<meta property="article:author" content="Vincent Zhu">
+<meta property="article:tag" content="MNIST">
+<meta property="article:tag" content="TFLite">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vincentzhu007.github.io/2023/02/22/aitalk-001-mnist-with-tflite/output_4_0.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.6.0/style.css" rel="stylesheet">
+    
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+    
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">Coder Zhu</div><div class="sub cap">Veni, Vidi, Vici</div></a></div>
+
+<nav class="menu dis-select"><a class="nav-item active" href="/">博客</a><a class="nav-item" href="/wiki">项目</a><a class="nav-item" href="/about/">关于</a></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">AI杂谈001. 使用TFLite实现MNIST推理</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDMNIST%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">下载MNIST数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B"><span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E4%BC%B0%E6%A8%A1%E5%9E%8B"><span class="toc-text">评估模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E4%B8%BAtflite%E6%A8%A1%E5%9E%8B"><span class="toc-text">转换为tflite模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8Ctflite%E6%A8%A1%E5%9E%8B"><span class="toc-text">运行tflite模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/AI%E6%9D%82%E8%B0%88/">AI杂谈</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-02-22T15:44:48.000Z">2023-02-22</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>AI杂谈001. 使用TFLite实现MNIST推理</span></h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tf.__version__)</span><br></pre></td></tr></table></figure>
+<pre><code>2023-02-22 22:47:18.176362: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+
+
+2.11.0
+</code></pre><h2 id="下载MNIST数据集"><a href="#下载MNIST数据集" class="headerlink" title="下载MNIST数据集"></a>下载MNIST数据集</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">mnist = keras.datasets.mnist</span><br><span class="line">(train_images, train_labels), (test_images, test_labels) = mnist.load_data()</span><br></pre></td></tr></table></figure>
+<pre><code>Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz
+11490434/11490434 [==============================] - 6s 0us/step
+</code></pre><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 归一化图片像素值至0-1间</span></span><br><span class="line">train_images = train_images / <span class="number">255.0</span></span><br><span class="line">test_images = test_images / <span class="number">255.0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 绘制训练集的前25张图片</span></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>,<span class="number">10</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">25</span>):</span><br><span class="line">    plt.subplot(<span class="number">5</span>, <span class="number">5</span>, i+<span class="number">1</span>)</span><br><span class="line">    plt.xticks([])</span><br><span class="line">    plt.yticks([])</span><br><span class="line">    plt.grid(<span class="literal">False</span>)</span><br><span class="line">    plt.imshow(train_images[i], cmap=plt.cm.gray)</span><br><span class="line">    plt.xlabel(train_labels[i])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>​<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/02/22/aitalk-001-mnist-with-tflite/output_4_0.png" alt="png"><br>​    </p>
+<h2 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 定义模型结构</span></span><br><span class="line">model = keras.Sequential([</span><br><span class="line">    keras.layers.InputLayer(input_shape=(<span class="number">28</span>, <span class="number">28</span>)),</span><br><span class="line">    keras.layers.Reshape(target_shape=(<span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>)),</span><br><span class="line">    keras.layers.Conv2D(filters=<span class="number">32</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), activation=tf.nn.relu),</span><br><span class="line">    keras.layers.Conv2D(filters=<span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), activation=tf.nn.relu),</span><br><span class="line">    keras.layers.MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>)),</span><br><span class="line">    keras.layers.Dropout(<span class="number">0.25</span>),</span><br><span class="line">    keras.layers.Flatten(),</span><br><span class="line">    keras.layers.Dense(<span class="number">10</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义如何训练模型</span></span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&#x27;adam&#x27;</span>,</span><br><span class="line">             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=<span class="literal">True</span>),</span><br><span class="line">             metrics=[<span class="string">&#x27;accuracy&#x27;</span>]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">#训练模型</span></span><br><span class="line">model.fit(train_images, train_labels, epochs=<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>1875/1875 [==============================] - 44s 23ms/step - loss: 0.1370 - accuracy: 0.9589
+Epoch 2/5
+1875/1875 [==============================] - 47s 25ms/step - loss: 0.0534 - accuracy: 0.9835
+Epoch 3/5
+1875/1875 [==============================] - 48s 26ms/step - loss: 0.0401 - accuracy: 0.9876
+Epoch 4/5
+1875/1875 [==============================] - 49s 26ms/step - loss: 0.0312 - accuracy: 0.9897
+Epoch 5/5
+1875/1875 [==============================] - 50s 27ms/step - loss: 0.0256 - accuracy: 0.9919
+</code></pre><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
+<pre><code>Model: &quot;sequential&quot;
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ reshape_1 (Reshape)         (None, 28, 28, 1)         0         
+
+ conv2d_2 (Conv2D)           (None, 26, 26, 32)        320       
+
+ conv2d_3 (Conv2D)           (None, 24, 24, 64)        18496     
+
+ max_pooling2d_1 (MaxPooling  (None, 12, 12, 64)       0         
+ 2D)                                                             
+
+ dropout_1 (Dropout)         (None, 12, 12, 64)        0         
+
+ flatten_1 (Flatten)         (None, 9216)              0         
+
+ dense_1 (Dense)             (None, 10)                92170     
+
+=================================================================
+Total params: 110,986
+Trainable params: 110,986
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre><h2 id="评估模型"><a href="#评估模型" class="headerlink" title="评估模型"></a>评估模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">test_loss, test_acc = model.evaluate(test_images, test_labels)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Test accuracy:&quot;</span>, test_acc)</span><br></pre></td></tr></table></figure>
+<pre><code>313/313 [==============================] - 2s 7ms/step - loss: 0.0310 - accuracy: 0.9903
+Test accuracy: 0.9902999997138977
+</code></pre><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_label_color</span>(<span class="params">val1, val2</span>):</span><br><span class="line">    <span class="keyword">if</span> (val1 == val2):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;green&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;red&#x27;</span></span><br><span class="line">    </span><br><span class="line">predictions = model.predict(test_images)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型输出10个浮点数，表示输入图片中是0到9的概率，需要找出最大概率的值，也就是预测的最可能的数字</span></span><br><span class="line">prediction_digits = np.argmax(predictions, axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">18</span>, <span class="number">18</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):</span><br><span class="line">    ax = plt.subplot(<span class="number">10</span>, <span class="number">10</span>, i+<span class="number">1</span>)</span><br><span class="line">    plt.xticks([])</span><br><span class="line">    plt.yticks([])</span><br><span class="line">    plt.grid(<span class="literal">False</span>)</span><br><span class="line">    image_index = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(prediction_digits))</span><br><span class="line">    plt.imshow(test_images[image_index], cmap=plt.cm.gray)</span><br><span class="line">    ax.xaxis.label.set_color(get_label_color(prediction_digits[image_index], test_labels[image_index]))</span><br><span class="line">    plt.xlabel(<span class="string">&#x27;Predicted: %d&#x27;</span> % prediction_digits[image_index])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<pre><code>313/313 [==============================] - 2s 7ms/step
+</code></pre><p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2023/02/22/aitalk-001-mnist-with-tflite/output_10_1.png" alt="png"></p>
+<h2 id="转换为tflite模型"><a href="#转换为tflite模型" class="headerlink" title="转换为tflite模型"></a>转换为tflite模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将Keras模型转换为TF Lite浮点模型</span></span><br><span class="line">converter = tf.lite.TFLiteConverter.from_keras_model(model)</span><br><span class="line">tflite_float_model = converter.convert()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示浮点模型大小</span></span><br><span class="line">float_model_size = <span class="built_in">len</span>(tflite_float_model) / <span class="number">1024</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Float model size = %dKBs&#x27;</span> % float_model_size)</span><br></pre></td></tr></table></figure>
+<pre><code>WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _update_step_xla while saving (showing 3 of 3). These functions will not be directly callable after loading.
+
+
+INFO:tensorflow:Assets written to: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmp614pyr8m/assets
+
+
+INFO:tensorflow:Assets written to: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmp614pyr8m/assets
+
+
+Float model size = 437KBs
+
+
+2023-02-22 23:22:07.283679: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:362] Ignored output_format.
+2023-02-22 23:22:07.283696: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:365] Ignored drop_control_dependency.
+2023-02-22 23:22:07.284211: I tensorflow/cc/saved_model/reader.cc:45] Reading SavedModel from: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmp614pyr8m
+2023-02-22 23:22:07.285685: I tensorflow/cc/saved_model/reader.cc:89] Reading meta graph with tags &#123; serve &#125;
+2023-02-22 23:22:07.285696: I tensorflow/cc/saved_model/reader.cc:130] Reading SavedModel debug info (if present) from: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmp614pyr8m
+2023-02-22 23:22:07.289811: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:357] MLIR V1 optimization pass is not enabled
+2023-02-22 23:22:07.290950: I tensorflow/cc/saved_model/loader.cc:229] Restoring SavedModel bundle.
+2023-02-22 23:22:07.323036: I tensorflow/cc/saved_model/loader.cc:213] Running initialization op on SavedModel bundle at path: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmp614pyr8m
+2023-02-22 23:22:07.331699: I tensorflow/cc/saved_model/loader.cc:305] SavedModel load for tags &#123; serve &#125;; Status: success: OK. Took 47489 microseconds.
+2023-02-22 23:22:07.351673: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+</code></pre><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用量化方式重新转换模型</span></span><br><span class="line">converter.optimizations = [tf.lite.Optimize.DEFAULT]</span><br><span class="line">tflite_quantized_model = converter.convert()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示量化模型大小</span></span><br><span class="line">quantized_model_size = <span class="built_in">len</span>(tflite_quantized_model) / <span class="number">1024</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Quantized model size = %dKBs&#x27;</span> % quantized_model_size)</span><br></pre></td></tr></table></figure>
+<pre><code>WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _update_step_xla while saving (showing 3 of 3). These functions will not be directly callable after loading.
+
+
+INFO:tensorflow:Assets written to: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmpio1p9wql/assets
+
+
+INFO:tensorflow:Assets written to: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmpio1p9wql/assets
+
+
+Quantized model size = 114KBs
+
+
+2023-02-22 23:24:13.132530: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:362] Ignored output_format.
+2023-02-22 23:24:13.132544: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:365] Ignored drop_control_dependency.
+2023-02-22 23:24:13.132644: I tensorflow/cc/saved_model/reader.cc:45] Reading SavedModel from: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmpio1p9wql
+2023-02-22 23:24:13.134124: I tensorflow/cc/saved_model/reader.cc:89] Reading meta graph with tags &#123; serve &#125;
+2023-02-22 23:24:13.134133: I tensorflow/cc/saved_model/reader.cc:130] Reading SavedModel debug info (if present) from: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmpio1p9wql
+2023-02-22 23:24:13.138687: I tensorflow/cc/saved_model/loader.cc:229] Restoring SavedModel bundle.
+2023-02-22 23:24:13.172666: I tensorflow/cc/saved_model/loader.cc:213] Running initialization op on SavedModel bundle at path: /var/folders/mp/n8hmdv6j5y1f9th2v0k78zz80000gp/T/tmpio1p9wql
+2023-02-22 23:24:13.181701: I tensorflow/cc/saved_model/loader.cc:305] SavedModel load for tags &#123; serve &#125;; Status: success: OK. Took 49057 microseconds.
+</code></pre><h2 id="运行tflite模型"><a href="#运行tflite模型" class="headerlink" title="运行tflite模型"></a>运行tflite模型</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate_tflite_model</span>(<span class="params">tflite_model</span>):</span><br><span class="line">    <span class="comment"># 初始化tflite解释器</span></span><br><span class="line">    interpreter = tf.lite.Interpreter(model_content=tflite_model)</span><br><span class="line">    interpreter.allocate_tensors()</span><br><span class="line">    input_tensor_index = interpreter.get_input_details()[<span class="number">0</span>][<span class="string">&quot;index&quot;</span>]</span><br><span class="line">    output = interpreter.tensor(interpreter.get_output_details()[<span class="number">0</span>][<span class="string">&quot;index&quot;</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 对测试集的每张图片运行推理</span></span><br><span class="line">    prediction_digits = []</span><br><span class="line">    <span class="keyword">for</span> test_image <span class="keyword">in</span> test_images:</span><br><span class="line">        <span class="comment"># 预处理：添加batch维，并且转换成float32类型，来匹配模型的输入格式</span></span><br><span class="line">        test_image = np.expand_dims(test_image, axis=<span class="number">0</span>).astype(np.float32)</span><br><span class="line">        interpreter.set_tensor(input_tensor_index, test_image)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 运行推理</span></span><br><span class="line">        interpreter.invoke()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 后处理：消除batch维，并且找出可能性最高的数字</span></span><br><span class="line">        digit = np.argmax(output()[<span class="number">0</span>])</span><br><span class="line">        prediction_digits.append(digit)</span><br><span class="line">        </span><br><span class="line">    <span class="comment"># 比较预测结果和标杆标签，计算精度</span></span><br><span class="line">    accurate_count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(prediction_digits)):</span><br><span class="line">        <span class="keyword">if</span> prediction_digits[index] == test_labels[index]:</span><br><span class="line">            accurate_count += <span class="number">1</span></span><br><span class="line">    accuracy = accurate_count * <span class="number">1.0</span> / <span class="built_in">len</span>(prediction_digits)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> accuracy</span><br><span class="line"></span><br><span class="line">float_accuracy = evaluate_tflite_model(tflite_float_model)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Float model accuracy = %.4f&#x27;</span> % float_accuracy)</span><br><span class="line"></span><br><span class="line">quantized_accuracy = evaluate_tflite_model(tflite_quantized_model)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Quantized model accuracy = %.4f&#x27;</span> % quantized_accuracy)</span><br></pre></td></tr></table></figure>
+<pre><code>Float model accuracy = 0.9903
+Quantized model accuracy = 0.9903
+</code></pre><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a target="_blank" rel="noopener" href="https://colab.research.google.com/github/tensorflow/examples/blob/master/lite/codelabs/digit_classifier/ml/step2_train_ml_model.ipynb">TensorFlow示例</a></p>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/02/22/tools-001-hexo-not-show-image/">开发工具-002-hexo不显示图片</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/02/20/cpptalk-001-dtor-with-exit/">C++杂谈001. exit()时的对象析构</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.18.5';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
   }
-  .l_body {
-    padding: 0;
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
   }
-  .l_body .l_left {
-    position: fixed;
-    transform: translateX(-320px);
-    margin: 0;
-    left: 0;
-    background: var(--site-bg);
-    box-shadow: $boxshadow-card-float;
-    z-index: 9;
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
   }
-  .l_body .l_main {
-    max-width: 100%;
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
   }
-  .l_body.mobile .l_left {
-    transition: transform 0.3s ease-out;
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
   }
-  .l_body.mobile.sidebar .l_left {
-    transform: translateX(0px);
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
   }
-}
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
